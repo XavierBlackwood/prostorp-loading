@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProstoRP - HL2 Beta Loading</title>
+    <style>
+        /* Импорт моноширинного шрифта */
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* Фоновое изображение HL2 Beta с темным наложением для читаемости */
+            background: linear-gradient(rgba(15, 15, 15, 0.8), rgba(15, 15, 15, 0.8)), 
+                        url('https://static0.thegamerimages.com/wordpress/wp-content/uploads/2022/03/City-17-1.jpg?q=50&fit=crop&w=1600&h=900&dpr=1.5') no-repeat center center fixed;
+            background-size: cover;
+            color: #d1d1d1;
+            font-family: 'Share Tech Mono', monospace;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Декоративная индустриальная сетка поверх фона */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80%;
+            max-width: 800px;
+        }
+
+        /* Логотип */
+        .logo-container {
+            margin-bottom: 30px;
+            animation: pulse 3s infinite alternate;
+        }
+
+        .logo-container img {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 15px rgba(255, 115, 60, 0.4));
+        }
+
+        @keyframes pulse {
+            0% { filter: drop-shadow(0 0 10px rgba(255, 115, 60, 0.2)); }
+            100% { filter: drop-shadow(0 0 25px rgba(255, 115, 60, 0.7)); }
+        }
+
+        /* Заголовок */
+        h1 {
+            font-size: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin-bottom: 10px;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        h1 span {
+            color: #ff7635; /* Оранжевый акцент */
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #aaa;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 3px #000;
+        }
+
+        /* Блок сменяющегося текста */
+        .loading-box {
+            width: 100%;
+            background-color: rgba(20, 20, 20, 0.85);
+            border: 2px solid #333;
+            padding: 25px;
+            border-left: 5px solid #ff7635;
+            text-align: center;
+            backdrop-filter: blur(2px);
+        }
+
+        .status-text {
+            font-size: 1.3rem;
+            color: #ff7635;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: opacity 0.4s ease;
+        }
+
+        .status-text.fade-out {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Аудиоплеер для фоновой музыки -->
+<!-- Пример с прямой ссылкой на файл из интернета -->
+    <audio id="bg-music" src="https://vk.ru/audio508581447_456239327_72d1066c212d1395b6" autoplay loop></audio>
+
+    <div class="container">
+        <!-- Логотип -->
+        <div class="logo-container">
+            <img src="Frame 101.png" alt="Server Logo">
+        </div>
+
+        <!-- Название -->
+        <h1>ProstoRP <span>HL2 Beta</span></h1>
+        <div class="subtitle">Установка соединения с сервером...</div>
+
+        <!-- Динамический текст -->
+        <div class="loading-box">
+            <div class="status-text" id="status">Инициализация протоколов...</div>
+        </div>
+    </div>
+
+    <script>
+        // Настройка громкости фоновой музыки (от 0.0 до 1.0)
+        const bgMusic = document.getElementById('bg-music');
+        if (bgMusic) {
+            bgMusic.volume = 0.3; // 30% громкости, чтобы не оглушать игрока
+        }
+
+        // Список атмосферных фраз
+        const phrases = [
+            "Выдаем броню ГО...",
+            "Чиним турели...",
+            "Разливаем пищевой концентрат...",
+            "Калибруем сканеры Альянса...",
+            "Стираем память новобранцам...",
+            "Загружаем протоколы ОТА...",
+            "Настраиваем частоты раций...",
+            "Зачищаем каналы от хедкрабов...",
+            "Допрашиваем подозреваемых в Сити-82...",
+            "Проверяем CID-карты граждан...",
+            "Подавляем вспышки некротической угрозы..."
+        ];
+
+        let currentIndex = 0;
+        const statusElement = document.getElementById('status');
+
+        function changePhrase() {
+            statusElement.classList.add('fade-out');
+
+            setTimeout(() => {
+                let nextIndex;
+                do {
+                    nextIndex = Math.floor(Math.random() * phrases.length);
+                } while (nextIndex === currentIndex && phrases.length > 1);
+                
+                currentIndex = nextIndex;
+                statusElement.innerText = phrases[currentIndex];
+                statusElement.classList.remove('fade-out');
+            }, 400);
+        }
+
+        // Интервал смены текста (2.5 сек)
+        setInterval(changePhrase, 2500);
+    </script>
+</body>
+</html>
