@@ -347,46 +347,28 @@
         }
         setInterval(changeTip, 4500);
         tipsBox.innerText = tips[0];
-
-        // Реалистичные файлы/события загрузки клиента (как у игрока в GMod / Source)
-        const loadingSteps = [
-            { text: "Connecting to 138.16.137.137:27017...", progress: 5 },
-            { text: "Verifying RCON credentials token...", progress: 15 },
-            { text: "Downloading file: materials/models/hl2beta/citizen_sheet.vtf", progress: 28 },
-            { text: "Downloading file: models/player/combine_s_beta.mdl", progress: 42 },
-            { text: "Downloading file: sound/ambient/city17_canal.wav", progress: 58 },
-            { text: "Downloading file: maps/rp_city17_beta.bsp", progress: 75 },
-            { text: "Precaching resources and models...", progress: 90 },
-            { text: "Client initialized. Entering City 17...", progress: 100 }
-        ];
-
-        const progressFill = document.getElementById('progress-fill');
-        const progressPercentage = document.getElementById('progress-percentage');
-        const statusText = document.getElementById('status-text');
-
-        let currentStepIndex = 0;
-        let simulatedProgress = 0;
-
-        const loadingInterval = setInterval(() => {
-            if (currentStepIndex < loadingSteps.length) {
-                const targetProgress = loadingSteps[currentStepIndex].progress;
-                
-                if (simulatedProgress < targetProgress) {
-                    simulatedProgress += 1;
-                }
-
-                progressFill.style.width = simulatedProgress + '%';
-                progressPercentage.innerText = simulatedProgress + '%';
-                statusText.innerText = loadingSteps[currentStepIndex].text;
-
-                if (simulatedProgress >= targetProgress) {
-                    currentStepIndex++;
-                }
-            } else {
-                clearInterval(loadingInterval);
-                statusText.innerText = "Соединение установлено. Добро пожаловать!";
-            }
-        }, 60);
-    </script>
+        
+        function SetStatusChanged(status) {
+            statusText.innerText = status;
+        }
+        
+        function DownloadingFile(file) {
+            statusText.innerText = "Downloading: " + file;
+        }
+        
+        let totalFiles = 0;
+        
+        function SetFilesTotal(total) {
+            totalFiles = total;
+        }
+        
+        function SetFilesNeeded(needed) {
+            if (!totalFiles) return;
+        
+            const progress = Math.floor((1 - needed / totalFiles) * 100);
+        
+            progressFill.style.width = progress + "%";
+            progressPercentage.innerText = progress + "%";
+        }
 </body>
 </html>
